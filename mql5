@@ -1,0 +1,91 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                                   Stenvall MK III |
+//|                                       http://www.forexroboteasy.com |
+//|                                             Developed by Forex Robot Easy Team |
+//+------------------------------------------------------------------+
+
+// Include necessary libraries and define global variables
+#include <Trade\Trade.mqh>
+#include <Trade\PositionInfo.mqh>
+
+input double lotSize = 0.01; // Trading lot size
+input int stopLoss = 100; // Stop loss level in points
+input int takeProfit = 200; // Take profit level in points
+
+// Initialize trade and position info objects
+CTrade trade;
+CPositionInfo positionInfo;
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // Set up initial trade parameters
+   trade.SetExpertMagicNumber(123456); // Set expert magic number
+   trade.SetDeviationInPoints(10); // Set deviation in points
+
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   // Close any open positions before deinitialization
+   trade.CloseAll();
+}
+
+//+------------------------------------------------------------------+
+//| Expert start function                                            |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+   // Check if there are any open positions
+   if (positionInfo.Total() == 0)
+   {
+      // No open positions, execute trend strategy
+      ExecuteTrendStrategy();
+   }
+   else
+   {
+      // Open positions exist, execute countertrend strategy
+      ExecuteCounterTrendStrategy();
+   }
+}
+
+//+------------------------------------------------------------------+
+//| Function to execute trend strategy                                |
+//+------------------------------------------------------------------+
+void ExecuteTrendStrategy()
+{
+   // Place buy order
+   trade.Buy(lotSize, Symbol(), 0, 0, stopLoss, takeProfit);
+
+   // Place sell order
+   trade.Sell(lotSize, Symbol(), 0, 0, stopLoss, takeProfit);
+}
+
+//+------------------------------------------------------------------+
+//| Function to execute countertrend strategy                        |
+//+------------------------------------------------------------------+
+void ExecuteCounterTrendStrategy()
+{
+   // Close all open positions
+   trade.CloseAll();
+}
+
+//+------------------------------------------------------------------+
+//| Logical conclusion of the code                                    |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   // Close any open positions before deinitialization
+   trade.CloseAll();
+
+   // Print the conclusion message
+   Print('Stenvall MK III has successfully completed its trading operations.');
+}
+
